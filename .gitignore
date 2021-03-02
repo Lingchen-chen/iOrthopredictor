@@ -1,4 +1,10 @@
-build/
+build
+results
+.idea
+venv
+checkpoints
+examples
+examples/cases_for_testing/clean.py
 */Thumbs.db
 */**/__pycache__
 */*.pyc
@@ -11,8 +17,3 @@ build/
 */**/*.dylib*
 *.DS_Store
 *~
-results
-.idea
-venv
-checkpoints
-examples
