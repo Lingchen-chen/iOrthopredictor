@@ -19,3 +19,4 @@ examples/cases_for_testing/clean.py
 *~
 *.zip
 extern/vgg/vgg_19
+*/*/__pycache__
