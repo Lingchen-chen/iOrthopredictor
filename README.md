@@ -55,7 +55,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
 ## Training
 - Before training with your own dataset, 
 please make it compatible with the data loader in data/data_loader.py.
-- Please download the **the pre-trained vgg weights** by running:
+- Please download **the pre-trained vgg weights** by running:
     ```bash
     python scripts/download_vgg.py
     ```
