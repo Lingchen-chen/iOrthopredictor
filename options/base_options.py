@@ -11,6 +11,7 @@ class BaseOptions():
     def initialize(self):
 
         # network arch
+        self.parser.add_argument('--batch_size', type=int, default=4, help='input batch size')
         self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
         self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
         self.parser.add_argument('--ngf', type=int, default=32, help='# of gen filters in the first conv layer')
@@ -25,7 +26,7 @@ class BaseOptions():
         # data loader
         self.parser.add_argument('--image_name', type=str, default='Img.jpg', help='original image file name')
         self.parser.add_argument('--mouth_label_name', type=str, default='MouthMask.png', help='mouth mask file name')
-        self.parser.add_argument('--batch_size', type=int, default=4, help='input batch size')
+        self.parser.add_argument('--case_marker', type=str, default='C', help='the marker for each case dir')
         self.parser.add_argument('--load_size', type=int, default=256, help='size of loaded image')
 
         # experiment

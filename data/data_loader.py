@@ -47,7 +47,7 @@ class base_loader:
     def __init__(self, dir, opt, random_shuffle=True):
 
         self.opt = opt
-        self.dirs = util.get_all_the_dirs_with_filter(dir)
+        self.dirs = util.get_all_the_dirs_with_filter(dir, opt.case_marker)
         self.load_size = opt.load_size
         self.batch_size = opt.batch_size
         self.random_shuffle = random_shuffle

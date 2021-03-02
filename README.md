@@ -38,7 +38,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
     ```
 - Please download the example dataset by running:
     ```bash
-    python scripts/download_datasets.py
+    python scripts/download_dataset.py
     ```
 
 ## Testing 

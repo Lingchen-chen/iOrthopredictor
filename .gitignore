@@ -17,3 +17,5 @@ examples/cases_for_testing/clean.py
 */**/*.dylib*
 *.DS_Store
 *~
+*.zip
+extern/vgg/vgg_19

@@ -10,7 +10,7 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--niter', type=int, default=200000, help='# of iter at starting learning rate')
         self.parser.add_argument('--niter_decay', type=int, default=50000, help='# of iter to linearly decay learning rate to zero')
         self.parser.add_argument('--lr', type=float, default=0.001, help='initial learning rate for adam')
-        self.parser.add_argument('--vgg_checkpoint_dir', type=str, default='models/vgg/checkpoint', help='the checkpoint file for vgg_19')
+        self.parser.add_argument('--vgg_checkpoint_dir', type=str, default='extern/vgg/vgg_19', help='the checkpoint file for vgg_19')
         self.parser.add_argument('--train_data_dir', type=str, default='examples/cases')
         self.parser.add_argument('--val_data_dir', type=str, default='examples/cases')
         self.parser.add_argument('--result_dir', type=str, default='results', help='dir to save generated images')
