@@ -1,9 +1,4 @@
-checkpoints/
-datasets/
-results/
 build/
-.idea/
-venv/
 */Thumbs.db
 */**/__pycache__
 */*.pyc
@@ -18,3 +13,6 @@ venv/
 *~
 results
 .idea
+venv
+checkpoints
+examples
