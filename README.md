@@ -13,8 +13,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
 
 <p align='center'>  
     <img src='imgs/org.jpg' width='800'/>
-    <img src='imgs/geos.gif' width='800'/>
-    <img src='imgs/rsts.gif' width='800'/>
+    <img src='imgs/composed.gif' width='800'/>
 </p>
 <p align='center'> 
   <b>upper most</b>: original images. <b>middle</b>: sythesized geometry maps. <b>lower most</b>: results.
