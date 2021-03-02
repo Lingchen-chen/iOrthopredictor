@@ -63,3 +63,19 @@ please make it compatible with the data loader in data/data_loader.py.
     ```bash
     python train.py --use_gan --use_style_cont --use_skip
     ```
+
+## Citation
+
+If you find this useful for your research, please cite the following paper.
+
+```
+@article{yang2020iorthopredictor,
+  title={iOrthoPredictor: model-guided deep prediction of teeth alignment},
+  author={Yang, Lingchen and Shi, Zefeng and Wu, Yiqian and Li, Xiang and Zhou, Kun and Fu, Hongbo and Zheng, Youyi},
+  journal={ACM Transactions on Graphics (TOG)},
+  volume={39},
+  number={6},
+  pages={1--15},
+  year={2020},
+}
+```
