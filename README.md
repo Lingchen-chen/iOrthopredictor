@@ -27,8 +27,32 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
 
 
 ## Getting Started
-### Installation
+- Conda installation:
+    ```bash
+    # 1. Create a conda virtual environment.
+    conda create -n tsyn python=3.6 -y
+    source activate tsyn
+    
+    # 2. Install dependency
+    pip install -r requirement.txt
+    ```
+- Please download the example dataset by running:
+    ```bash
+    python scripts/download_datasets.py
+    ```
 
+## Testing 
+- Please download the **the pre-trained weights** by running:
+    ```bash
+     python scripts/download_model.py
+    ```
+- Test the model by running: 
+    ```bash
+     python test.py --use_gan --use_style_cont --use_skip
+    ```
+- You can check the results in examples/cases_for_testing
 
-### Testing 
-- Please first download example dataset by running `python scripts/download_datasets.py`.
+## Training
+- Before training with your own dataset, 
+please make it compatible with the data loader in data/data_loader.py.
+
