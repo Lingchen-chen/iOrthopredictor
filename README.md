@@ -42,7 +42,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
     ```
 
 ## Testing 
-- Please download the **the pre-trained weights** by running:
+- Please download **the pre-trained weights** by running:
     ```bash
      python scripts/download_model.py
     ```
@@ -55,4 +55,11 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
 ## Training
 - Before training with your own dataset, 
 please make it compatible with the data loader in data/data_loader.py.
-
+- Please download the "the pre-trained vgg weights" by running:
+    ```bash
+    python scripts/download_vgg.py
+    ```
+- Train the model by running:
+    ```bash
+    python train.py --use_gan --use_style_cont --use_skip
+    ```
