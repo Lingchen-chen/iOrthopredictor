@@ -1,8 +1,8 @@
 import os
 from google_drive_downloader import GoogleDriveDownloader as gdd
 
-# https://drive.google.com/file/d/10rgyg4R6Yn1_uyGzLU0WRJBresrdqFCG/view?usp=sharing
-file_id = '10rgyg4R6Yn1_uyGzLU0WRJBresrdqFCG'
+# https://drive.google.com/file/d/1fKH5o85Wj22Cs4OzbwHDVqoc8eAiWhlF/view?usp=sharing
+file_id = '1fKH5o85Wj22Cs4OzbwHDVqoc8eAiWhlF'
 file_name = 'examples.zip'
 chpt_path = './'
 if not os.path.isdir(chpt_path):
