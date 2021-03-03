@@ -82,4 +82,4 @@ If you find this useful for your research, please cite the following paper.
 
 ## Acknowledgement 
 
-We build our project base on [StyleGAN2](https://github.com/NVlabs/stylegan2).
+We build our project based on [StyleGAN2](https://github.com/NVlabs/stylegan2).
