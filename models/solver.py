@@ -243,7 +243,7 @@ class TSynNetSolver(BaseSolver):
 
                 if iteration % self.save_iter == 0:
                     if iteration > self.lr_decay_begin:
-                        fid = self.FID_test()
+                        fid = self.get_FID(self.val_loader)
                         if fid < FID:
                             print(f"previous best FID: {FID}, current best FID: {fid}")
                             FID = fid
@@ -253,7 +253,7 @@ class TSynNetSolver(BaseSolver):
 
             saver.save(self.sess, save_path, global_step=self.lr_decay_end)
 
-    def FID_test(self):
+    def get_FID(self, data_loader):
 
         if not self.is_training:
             return None
@@ -263,19 +263,18 @@ class TSynNetSolver(BaseSolver):
         util.mkdirs(real_dir)
         util.mkdirs(fake_dir)
 
-        for i in range(self.val_loader.get_iters()):
-            imgs, edges, mmask = self.val_loader.get_one_batch_data()
+        for i in range(data_loader.get_iters()):
+            imgs, edges, mmask = data_loader.get_one_batch_data()
             feed_dict = {self.x_: imgs, self.e_: edges, self.m_: mmask}  # ignore the data augmentation
             real, fake = self.sess.run([self.x_, self.r_all], feed_dict=feed_dict)
-            real, fake = util.numpy2im(real), util.numpy2im(fake)   # do no use tensor2im
 
             for j, img in enumerate(real):
                 id = i * self.batch_size + j
-                cv2.imwrite(os.path.join(real_dir, f"{id}.jpg"), img)
+                cv2.imwrite(os.path.join(real_dir, f"{id}.jpg"), util.numpy2im(img))
 
             for j, img in enumerate(fake):
                 id = i * self.batch_size + j
-                cv2.imwrite(os.path.join(fake_dir, f"{id}.jpg"), img)
+                cv2.imwrite(os.path.join(fake_dir, f"{id}.jpg"), util.numpy2im(img))
 
         with tf.Graph().as_default():
             FID = calculate_fid_given_paths([real_dir, fake_dir])

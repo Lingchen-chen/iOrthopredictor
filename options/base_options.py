@@ -11,7 +11,7 @@ class BaseOptions():
     def initialize(self):
 
         # network arch
-        self.parser.add_argument('--batch_size', type=int, default=4, help='input batch size')
+        self.parser.add_argument('--batch_size', type=int, default=8, help='input batch size')
         self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
         self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
         self.parser.add_argument('--ngf', type=int, default=32, help='# of gen filters in the first conv layer')

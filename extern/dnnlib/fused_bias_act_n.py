@@ -8,7 +8,7 @@
 
 import numpy as np
 import tensorflow as tf
-from dnnlib.util import EasyDict
+from .util import EasyDict
 
 #----------------------------------------------------------------------------
 

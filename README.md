@@ -79,3 +79,7 @@ If you find this useful for your research, please cite the following paper.
   year={2020},
 }
 ```
+
+## Acknowledgement 
+
+We build our project base on [StyleGAN2](https://github.com/NVlabs/stylegan2).
