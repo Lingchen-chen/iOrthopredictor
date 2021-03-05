@@ -132,6 +132,8 @@ class Discriminator(object):
         self.ndf = opt.ndf
         self.max_ndf = opt.max_ndf
 
+        self.reuse = None
+
     def __call__(self, x):
 
         if self.reuse:

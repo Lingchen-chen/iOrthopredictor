@@ -18,5 +18,6 @@ examples/cases_for_testing/clean.py
 *.DS_Store
 *~
 *.zip
-extern/vgg/vgg_19
 */*/__pycache__
+extern/metrics/inception*
+extern/vgg/vgg*

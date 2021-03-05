@@ -11,13 +11,13 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--niter_decay', type=int, default=50000, help='# of iter to linearly decay learning rate to zero')
         self.parser.add_argument('--lr', type=float, default=0.001, help='initial learning rate for adam')
         self.parser.add_argument('--vgg_checkpoint_dir', type=str, default='extern/vgg/vgg_19', help='the checkpoint file for vgg_19')
-        self.parser.add_argument('--train_data_dir', type=str, default='examples/cases')
-        self.parser.add_argument('--val_data_dir', type=str, default='examples/cases')
+        self.parser.add_argument('--train_data_dir', type=str, default='../TrainData/Teeth', help='your train data dir')
+        self.parser.add_argument('--val_data_dir', type=str, default='../TestData/ImagePairs', help='your val data dir')
         self.parser.add_argument('--result_dir', type=str, default='results', help='dir to save generated images')
-        self.parser.add_argument('--teeth_label_name', type=str, default='TeethEdgeUp.png, TeethEdgeDown.png', help='teeth geometry file names')
+        self.parser.add_argument('--teeth_label_name', type=str, default='TeethEdgeUp.png,TeethEdgeDown.png', help='teeth geometry file names')
 
         # for discriminators
-        self.parser.add_argument('--ndf', type=int, default=16, help='# of discrim filters in first conv layer')
+        self.parser.add_argument('--ndf', type=int, default=32, help='# of discrim filters in first conv layer')
         self.parser.add_argument('--max_ndf', type=int, default=128, help='# of max discrim filters')
 
         # loss function parameters

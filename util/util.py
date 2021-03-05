@@ -9,25 +9,22 @@ from shutil import copyfile
 def tensor2im(image_tensor, flip=-1, format="NCHW"):
     with tf.name_scope("Tensor2image"):
 
-        if len(image_tensor.get_shape()) == 4:
-            image_tensor = image_tensor[0]
-
         if format == "NCHW":
-            image_tensor = tf.transpose(image_tensor, (1, 2, 0))
+            image_tensor = tf.transpose(image_tensor, (0, 2, 3, 1))
 
-        image_tensor = image_tensor[:, :, :3] * 255.0
+        image_tensor = image_tensor[:, :, :, :3] * 255.0
         image_tensor = tf.clip_by_value(image_tensor, 0, 255)
-        image_tensor = image_tensor[:, :, ::flip]
+        image_tensor = image_tensor[:, :, :, ::flip]
 
         return image_tensor
 
 
-def numpy2im(image_numpy, flip=-1, format="NCHW"):
+def numpy2im(image_numpy, flip=-1, format="CHW"):
 
     if len(image_numpy.shape) == 4:
         image_numpy = image_numpy[0]
 
-    if format == "NCHW":
+    if format == "CHW":
         image_numpy = np.transpose(image_numpy, (1, 2, 0))
 
     image_numpy = image_numpy[:, :, :3] * 255.0
