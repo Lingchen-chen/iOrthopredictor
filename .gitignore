@@ -6,7 +6,6 @@ checkpoints
 examples
 examples/cases_for_testing/clean.py
 */Thumbs.db
-*/**/__pycache__
 */*.pyc
 */**/*.pyc
 */**/**/*.pyc
