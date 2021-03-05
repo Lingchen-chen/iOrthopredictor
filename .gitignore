@@ -19,5 +19,6 @@ examples/cases_for_testing/clean.py
 *~
 *.zip
 */*/__pycache__
+*/__pycache__
 extern/metrics/inception*
 extern/vgg/vgg*
