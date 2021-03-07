@@ -64,12 +64,16 @@ class TSynNetSolver(BaseSolver):
             self.lr_decay_end = opt.niter + opt.niter_decay
             self.kl_weight = opt.kl_weight
             self.content_weight = opt.content_weight
+            self.learning_rate = opt.lr
 
             # saving params
             self.display_iter = opt.display_freq
             self.save_iter = opt.save_latest_freq
-            self.learning_rate = opt.lr
+            self.fid_tracker = os.path.join(self.checkpoint_dir_best_FID, 'fid.txt')
+            with open(self.fid_tracker, 'wt') as opt_file:
+                opt_file.write('================ FID ================\n')
 
+            # data loader
             self.vgg_checkpoint_dir = opt.vgg_checkpoint_dir
             self.train_loader = data_loader(self.train_data_dir, opt)
             self.val_loader = data_loader(self.val_data_dir, opt)
@@ -78,7 +82,10 @@ class TSynNetSolver(BaseSolver):
                                             img_rotate_prob=0.8,
                                             img_rotate_range=0.2,
                                             label_clip=True)
+
+            # discriminator
             self.D = Discriminator("RenderingNetDiscriminator", opt)
+
         else:
             self.test_data_dir = opt.test_data_dir
             self.test_loader = data_loader_test(self.test_data_dir, opt)
@@ -136,8 +143,6 @@ class TSynNetSolver(BaseSolver):
 
         self.initialized = True
 
-        return True
-
     def train(self):
 
         if not self.initialized:
@@ -150,8 +155,8 @@ class TSynNetSolver(BaseSolver):
             global_step = tf.get_variable('global_step', shape=[], dtype=tf.int64, initializer=tf.constant_initializer(0), trainable=False)
             learning_rate = util.makeLinearWeight(global_step,
                                                   self.lr_decay_begin, self.lr_decay_end,
-                                                  self.learning_rate, 0,
-                                                  0, self.learning_rate)
+                                                  self.learning_rate, self.learning_rate,
+                                                  self.learning_rate, self.learning_rate)
 
             # -------------------------------- build network ------------------------------ #
             # kl divergence loss
@@ -173,7 +178,7 @@ class TSynNetSolver(BaseSolver):
             D_loss = G_loss = D_reg = 0.
             with tf.name_scope("GAN_Loss"):
                 if self.use_gan:
-                    D_loss, D_reg, G_loss, G_reg = adversarial_loss(self.D, self.xm, tf.stop_gradient(self.rm), self.m_aug)
+                    D_loss, D_reg, G_loss, G_reg = adversarial_loss(self.D, self.xm, self.rm, self.m_aug)
 
             G_total_loss = kl_divergence_loss + (total_content_loss + l1_loss) + G_loss
             D_total_loss = D_loss + D_reg
@@ -245,9 +250,10 @@ class TSynNetSolver(BaseSolver):
                     if iteration > self.lr_decay_begin:
                         fid = self.get_FID(self.val_loader)
                         if fid < FID:
-                            print(f"previous best FID: {FID}, current best FID: {fid}")
                             FID = fid
                             saver.save(self.sess, save_path_best_fid, global_step=iteration)
+                            with open(self.fid_tracker, 'a') as opt_file:
+                                opt_file.write('%s\n' % str(FID))
 
                     saver.save(self.sess, save_path, global_step=iteration)
 
@@ -266,15 +272,15 @@ class TSynNetSolver(BaseSolver):
         for i in range(data_loader.get_iters()):
             imgs, edges, mmask = data_loader.get_one_batch_data()
             feed_dict = {self.x_: imgs, self.e_: edges, self.m_: mmask}  # ignore the data augmentation
-            real, fake = self.sess.run([self.x_, self.r_all], feed_dict=feed_dict)
+            fake = self.sess.run(self.r_all, feed_dict=feed_dict)
 
-            for j, img in enumerate(real):
+            for j, img in enumerate(imgs):
                 id = i * self.batch_size + j
-                cv2.imwrite(os.path.join(real_dir, f"{id}.jpg"), util.numpy2im(img))
+                cv2.imwrite(os.path.join(real_dir, f"{id}.jpg"), util.numpy2im(img, format="HWC"))
 
             for j, img in enumerate(fake):
                 id = i * self.batch_size + j
-                cv2.imwrite(os.path.join(fake_dir, f"{id}.jpg"), util.numpy2im(img))
+                cv2.imwrite(os.path.join(fake_dir, f"{id}.jpg"), util.numpy2im(img, format="CHW"))
 
         with tf.Graph().as_default():
             FID = calculate_fid_given_paths([real_dir, fake_dir])
@@ -294,7 +300,7 @@ class TSynNetSolver(BaseSolver):
             util.mkdirs(save_path)
             for step, edge in edges.items():
                 save_file = os.path.join(save_path, f"{step}.jpg")
-                feed_dict = {self.x_: img, self.e_: edge, self.m_: mmask}  # ignore the data augmentation
+                feed_dict = {self.x_: img, self.e_: edge, self.m_: mmask}
                 result = self.sess.run(self.r_all, feed_dict=feed_dict)
                 result = util.numpy2im(result)
                 cv2.imwrite(save_file, result)
