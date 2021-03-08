@@ -42,15 +42,19 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
     ```
 
 ## Testing 
-- Please download **the pre-trained weights** by running:
+- Please download **the pre-trained model** by running:
     ```bash
      python scripts/download_model.py
     ```
 - Test the model by running: 
     ```bash
-     python test.py --use_gan --use_style_cont --use_skip
+     python test.py \
+     --test_data_dir=examples/cases_for_testing \  
+     --use_gan \
+     --use_style_cont \
+     --use_skip
     ```
-- You can check the results in examples/cases_for_testing
+- You can check the results in **examples/cases_for_testing**
 
 ## Training
 - Before training with your own dataset, 
@@ -61,7 +65,12 @@ please make it compatible with the data loader in data/data_loader.py.
     ```
 - Train the model by running:
     ```bash
-    python train.py --use_gan --use_style_cont --use_skip
+    python train.py \
+    --train_data_dir=your_train_data_dir \
+    --val_data_dir=your_val_data_dir \
+    --use_gan \
+    --use_style_cont \
+    --use_skip
     ```
 
 ## Citation
