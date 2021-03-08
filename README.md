@@ -31,7 +31,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
     ```bash
     # 1. Create a conda virtual environment.
     conda create -n tsyn python=3.6 -y
-    source activate tsyn
+    conda activate tsyn
     
     # 2. Install dependency
     pip install -r requirement.txt
