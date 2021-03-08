@@ -22,7 +22,7 @@ enabling visual prediction of orthodontics under the guidance of the synthesized
 ## Prerequisites
 - Linux
 - Python 3.6
-- NVIDIA GPU + CUDA cuDNN
+- NVIDIA GPU + CUDA 10.0 + cuDNN 7.5
 - tensorflow-gpu 1.13.1
 
 
