@@ -44,10 +44,12 @@ class TSynNetSolver(BaseSolver):
 
         # define dir for the model
         self.root_dir = os.path.join(opt.expr_dir, opt.name)
+        self.val_log_dir = os.path.join(self.root_dir, 'logs', 'val')
         self.train_log_dir = os.path.join(self.root_dir, 'logs', 'train')
         self.checkpoint_dir = os.path.join(self.root_dir, "checkpoint")
         self.checkpoint_dir_best_FID = os.path.join(self.root_dir, "checkpoint_best_FID")
 
+        util.mkdirs(self.val_log_dir)
         util.mkdirs(self.train_log_dir)
         util.mkdirs(self.checkpoint_dir)
         util.mkdirs(self.checkpoint_dir_best_FID)
@@ -60,8 +62,8 @@ class TSynNetSolver(BaseSolver):
             self.val_data_dir = opt.val_data_dir
 
             # training params
-            self.lr_decay_begin = opt.niter
-            self.lr_decay_end = opt.niter + opt.niter_decay
+            self.fid_val_begin = opt.niter
+            self.fid_val_end = opt.niter + opt.niter_fid_val
             self.kl_weight = opt.kl_weight
             self.content_weight = opt.content_weight
             self.learning_rate = opt.lr
@@ -70,7 +72,7 @@ class TSynNetSolver(BaseSolver):
             self.display_iter = opt.display_freq
             self.save_iter = opt.save_latest_freq
             self.fid_tracker = os.path.join(self.checkpoint_dir_best_FID, 'fid.txt')
-            with open(self.fid_tracker, 'wt') as opt_file:
+            with open(self.fid_tracker, 'w') as opt_file:
                 opt_file.write('================ FID ================\n')
 
             # data loader
@@ -153,10 +155,6 @@ class TSynNetSolver(BaseSolver):
 
             # some definitions
             global_step = tf.get_variable('global_step', shape=[], dtype=tf.int64, initializer=tf.constant_initializer(0), trainable=False)
-            learning_rate = util.makeLinearWeight(global_step,
-                                                  self.lr_decay_begin, self.lr_decay_end,
-                                                  self.learning_rate, self.learning_rate,
-                                                  self.learning_rate, self.learning_rate)
 
             # -------------------------------- build network ------------------------------ #
             # kl divergence loss
@@ -186,10 +184,9 @@ class TSynNetSolver(BaseSolver):
             D_var = slim.get_variables("RenderingNetDiscriminator/")
             G_var = slim.get_variables("RenderingNet/")
 
-            with tf.control_dependencies([learning_rate]):
-                if self.use_gan:
-                    D_train_step = tf.train.AdamOptimizer(learning_rate).minimize(D_total_loss, var_list=D_var)
-                G_train_step = tf.train.AdamOptimizer(learning_rate).minimize(G_total_loss, var_list=G_var, global_step=global_step)
+            if self.use_gan:
+                D_train_step = tf.train.AdamOptimizer(self.learning_rate).minimize(D_total_loss, var_list=D_var)
+            G_train_step = tf.train.AdamOptimizer(self.learning_rate).minimize(G_total_loss, var_list=G_var, global_step=global_step)
 
             # record summary
             loss_summary = []
@@ -201,7 +198,6 @@ class TSynNetSolver(BaseSolver):
             loss_summary.append(tf.summary.scalar("D_reg", D_reg))
             loss_summary.append(tf.summary.scalar("G_total_loss", G_total_loss))
             loss_summary.append(tf.summary.scalar("D_total_loss", D_total_loss))
-            loss_summary.append(tf.summary.scalar("learning_rate", learning_rate))
 
             image_summary = []
             def add_image_summary(name, img):
@@ -215,12 +211,13 @@ class TSynNetSolver(BaseSolver):
             step_summary = tf.summary.merge(loss_summary + image_summary)
 
             trainWriter = tf.summary.FileWriter(self.train_log_dir, self.sess.graph)
+            valWriter = tf.summary.FileWriter(self.val_log_dir)
 
             # Initialize
             saver = tf.train.Saver()
             self.sess.run(tf.global_variables_initializer())
             save_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
-            save_path_best_fid = os.path.join(self.checkpoint_dir_best_FID, 'model.ckpt')
+            save_path_best_fid = os.path.join(self.checkpoint_dir_best_FID, 'model_best_fid.ckpt')
 
             if not self.opt.continue_train:
                 saver_vgg = tf.train.Saver(slim.get_variables('vgg_19'))
@@ -231,7 +228,7 @@ class TSynNetSolver(BaseSolver):
                     print("loading latest failed, training from scratch")
 
             FID = 1000
-            for iteration in range(self.sess.run(global_step) + 1, self.lr_decay_end + 1):
+            for iteration in range(self.sess.run(global_step) + 1, self.fid_val_end + 1):
 
                 imgs, edges, mmask = self.train_loader.get_one_batch_data()
                 feed_dict = {self.x_raw: imgs, self.e_raw: edges, self.m_raw: mmask}
@@ -240,29 +237,35 @@ class TSynNetSolver(BaseSolver):
                 self.sess.run(G_train_step, feed_dict=feed_dict)
 
                 if iteration % self.display_iter == 0:
+                    # for train
                     imgs, edges, mmask = self.train_loader.get_one_batch_data()
                     feed_dict = {self.x_raw: imgs, self.e_raw: edges, self.m_raw: mmask}
-
                     summaries = self.sess.run(step_summary, feed_dict=feed_dict)
                     trainWriter.add_summary(summaries, global_step=iteration)
 
+                    # for val
+                    imgs, edges, mmask = self.val_loader.get_one_batch_data()
+                    feed_dict = {self.x_raw: imgs, self.e_raw: edges, self.m_raw: mmask}
+                    summaries = self.sess.run(step_summary, feed_dict=feed_dict)
+                    valWriter.add_summary(summaries, global_step=iteration)
+
                 if iteration % self.save_iter == 0:
-                    if iteration > self.lr_decay_begin:
+                    # fid validation
+                    if iteration > self.fid_val_begin:
                         fid = self.get_FID(self.val_loader)
                         if fid < FID:
                             FID = fid
-                            saver.save(self.sess, save_path_best_fid, global_step=iteration)
+                            saver.save(self.sess, save_path_best_fid)
                             with open(self.fid_tracker, 'a') as opt_file:
                                 opt_file.write('%s\n' % str(FID))
 
                     saver.save(self.sess, save_path, global_step=iteration)
 
-            saver.save(self.sess, save_path, global_step=self.lr_decay_end)
+            saver.save(self.sess, save_path, global_step=self.fid_val_end)
+            trainWriter.close()
+            valWriter.close()
 
     def get_FID(self, data_loader):
-
-        if not self.is_training:
-            return None
 
         real_dir = os.path.join(self.result_dir, "real")
         fake_dir = os.path.join(self.result_dir, "fake")
@@ -304,6 +307,4 @@ class TSynNetSolver(BaseSolver):
                 result = self.sess.run(self.r_all, feed_dict=feed_dict)
                 result = util.numpy2im(result)
                 cv2.imwrite(save_file, result)
-
-
 

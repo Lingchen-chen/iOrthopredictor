@@ -332,7 +332,7 @@ def _handle_path(path, sess, low_profile=False):
     return m, s
 
 
-def calculate_fid_given_paths(paths, inception_path="./Metrics/inception-2015-12-05", low_profile=False):
+def calculate_fid_given_paths(paths, inception_path="./extern/metrics/inception-2015-12-05", low_profile=False):
     ''' Calculates the FID of two paths. '''
     inception_path = check_or_download_inception(inception_path)
 
