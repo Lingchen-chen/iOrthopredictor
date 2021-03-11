@@ -56,13 +56,13 @@ class base_loader:
         self.nums = 0
 
         self.generate_corpus()
-        self.current_pos = 0
 
     def generate_corpus(self):
 
         self.corpus = copy.copy(self.dirs)
         random.shuffle(self.corpus) if self.random_shuffle else None
         self.nums = len(self.corpus)
+        self.current_pos = 0
 
     def start_generation(self):
 
@@ -86,8 +86,8 @@ class base_loader:
 
 class data_loader(base_loader):
 
-    def __init__(self, dir, opt):
-        super().__init__(dir, opt, True)
+    def __init__(self, dir, opt, random_shuffle=True):
+        super().__init__(dir, opt, random_shuffle)
 
         self.image_name = opt.image_name
         self.teeth_label_name = opt.teeth_label_name

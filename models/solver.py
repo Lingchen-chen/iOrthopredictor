@@ -79,6 +79,7 @@ class TSynNetSolver(BaseSolver):
             self.vgg_checkpoint_dir = opt.vgg_checkpoint_dir
             self.train_loader = data_loader(self.train_data_dir, opt)
             self.val_loader = data_loader(self.val_data_dir, opt)
+            self.fid_loader = data_loader(self.val_data_dir, opt, False)    # no need shuffle, for best fid tracking
             self.data_augmentor = Augmentor(img_hsv_prob=0.0,
                                             horizon_flip=True,
                                             img_rotate_prob=0.8,
@@ -215,6 +216,7 @@ class TSynNetSolver(BaseSolver):
 
             # Initialize
             saver = tf.train.Saver()
+            saver_best_fid = tf.train.Saver()
             self.sess.run(tf.global_variables_initializer())
             save_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
             save_path_best_fid = os.path.join(self.checkpoint_dir_best_FID, 'model_best_fid.ckpt')
@@ -252,10 +254,10 @@ class TSynNetSolver(BaseSolver):
                 if iteration % self.save_iter == 0:
                     # fid validation
                     if iteration > self.fid_val_begin:
-                        fid = self.get_FID(self.val_loader)
+                        fid = self.get_FID(self.fid_loader)
                         if fid < FID:
                             FID = fid
-                            saver.save(self.sess, save_path_best_fid)
+                            saver_best_fid.save(self.sess, save_path_best_fid)
                             with open(self.fid_tracker, 'a') as opt_file:
                                 opt_file.write('%s\n' % str(FID))
 
