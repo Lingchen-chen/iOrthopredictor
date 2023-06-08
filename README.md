@@ -12,11 +12,12 @@ Our TSynNet automatically disentangles teeth geometry and appearance,
 enabling visual prediction of orthodontics under the guidance of the synthesized geometry maps:
 
 <p align='center'>  
-    <img src='imgs/org.jpg' width='800'/>
+<!--     <img src='imgs/org.jpg' width='800'/> -->
     <img src='imgs/composed.gif' width='800'/>
 </p>
 <p align='center'> 
-  <b>upper most</b>: original images. <b>middle</b>: sythesized geometry maps. <b>lower most</b>: results.
+<!--   <b>upper most</b>: original images. <b>middle</b>: sythesized geometry maps. <b>lower most</b>: results. -->
+  <b>upper</b>: sythesized geometry maps. <b>lower</b>: results.
 </p>
 
 ## Prerequisites
